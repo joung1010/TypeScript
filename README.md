@@ -30,5 +30,13 @@ JavaScript가 동작하는 환경이라면 어디든지 사용할 수 있는 이
 설치 방법 : npm install -g typescript  
 TypeScript 컴파일러 실행 명령어 : tsc  
 
+## 타입스크립트 실행  
+콘솔창에서 우리가 만든 main.ts 를 파일을 실행하면 실행이 되지만  
+Typescript 문법이 추가 되면 에러가 발생한다.  
+브라우저에서도 에러가 발생한다. 따라서 우리는 .ts 파일을 컴파일 통해 .js파일로 컴파일해서 사용해야만 노드 환경이나 브라우저 환경해서  
+사용할 수 있다.  
+컴파일 없이 바로 ts 파일 실행하기 : npm install -g ts-node  
+ts-node xx.ts
+
  
 
