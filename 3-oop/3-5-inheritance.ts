@@ -11,16 +11,7 @@
         makeCoffee(shots: number): CoffeeCup;
     }
 
-    interface CommercialCoffeeMaker {
-        makeCoffee(shots: number): CoffeeCup;
-
-        fillCoffeeBenas(beans: number): void;
-
-        clean(): void;
-    }
-
-
-    class CoffeeMachine implements CoffeeMaker, CommercialCoffeeMaker{
+    class CoffeeMachine implements CoffeeMaker {
         private static BEANS_GRAMM_PER_SHOT :number  = 7; // class level
         private _coffeeBeansGramm: number;   // instance (object) level
 
@@ -42,7 +33,7 @@
             return new CoffeeMachine(coffeeBeans);
         }
 
-        protected grindBeans(shots: number) {
+        private grindBeans(shots: number) {
             console.log(`grinding beans for ${shots}`);
             if (this._coffeeBeansGramm < shots * CoffeeMachine.BEANS_GRAMM_PER_SHOT) {
                 throw new Error(`Not enjough coffee beans`);
@@ -50,11 +41,11 @@
             this._coffeeBeansGramm -= shots * CoffeeMachine.BEANS_GRAMM_PER_SHOT;
         }
 
-        protected preheat():void {
+        private preheat():void {
             console.log('heating up...');
         }
 
-        protected extract(shots: number):CoffeeCup {
+        private extract(shots: number):CoffeeCup {
             console.log(`Pulling ${shots} shots...`)
             return {
                 shots,
@@ -68,32 +59,30 @@
         }
     }
 
-    class LatteeMachine extends CoffeeMachine {
-        constructor(coffeeBeansGramm:number) {
+    class CaffeLatteMachine extends CoffeeMachine {
+        constructor(coffeeBeansGramm:number,public serialNumber:string) {
             super(coffeeBeansGramm);
         }
 
-        protected extract(shots: number): CoffeeCup {
-            console.log(`Pulling ${shots} shots...`)
-            return {
-                shots,
-                hasMilk: true
-            };
+        steamMilk():void {
+            console.log('steamming some milk...');
         }
         makeCoffee(shots: number): CoffeeCup {
-            super.grindBeans(shots);
-            super.preheat();
-            return  this.extract(shots);
+           const coffee = super.makeCoffee(shots);
+           this.steamMilk();
+            return {
+                ...coffee,
+                hasMilk: true,
+            };
         }
 
     }
 
     const maker:CoffeeMaker =  CoffeeMachine.makeMachine(32);
-    maker.makeCoffee(2);
-
-    const latteeMaker: CoffeeMaker = new LatteeMachine(32);
+    const latteeMaker = new CaffeLatteMachine(32,'LS001');
     const latteeCup = latteeMaker.makeCoffee(2);
     console.log(latteeCup)
+    console.log(latteeMaker.serialNumber);
 
 
 }
