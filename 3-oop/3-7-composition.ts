@@ -14,11 +14,112 @@
         makeCoffee(shots: number): CoffeeCup;
     }
 
+    interface MilkFrother {
+        makeMilk(cup: CoffeeCup): CoffeeCup;
+    }
+
+    interface SugarProvider {
+        addSugar(cup:CoffeeCup):CoffeeCup ;
+    }
+
+    // 이렇게 클래스들끼리 타이트하게 연결되어있는 클레스들은 재사용성이 떨어진다
+    // 클래스들의 의사소통은 그들의 계약서 규격사항인 인어페이스를 통해서 하는 것이 좋다.
+    // 인터페이스를 통해 구현하면  해당 규격사항, 계약서를 따르는 즉, 특정 메소드를 반드시 구현하는 클레스
+    // 이 인터페이스를 통해 의사소통하게 되면 다형성을 통해 좀더 유연한 느슨한 연결을통해 재사용성을 높일 수 있다.
+
+    //싸구려 우유 거품기
+    class CheapMiilkSteamer implements MilkFrother{
+        private steamMilk():void {
+            console.log('steamming some milk...');
+        }
+
+        makeMilk(cup: CoffeeCup): CoffeeCup {
+            this.steamMilk();
+            return {
+                ...cup,
+                hasMilk : true,
+            }
+        }
+    }
+
+    class FancyMiilkSteamer implements MilkFrother{
+        private steamMilk():void {
+            console.log('Fancy steamming some milk...');
+        }
+
+        makeMilk(cup: CoffeeCup): CoffeeCup {
+            this.steamMilk();
+            return {
+                ...cup,
+                hasMilk : true,
+            }
+        }
+    }
+
+    class ColdMiilkSteamer implements MilkFrother{
+        private steamMilk():void {
+            console.log('Fancy steamming some Cold milk...');
+        }
+
+        makeMilk(cup: CoffeeCup): CoffeeCup {
+            this.steamMilk();
+            return {
+                ...cup,
+                hasMilk : true,
+            }
+        }
+    }
+
+    class NoMilk implements MilkFrother {
+        makeMilk(cup: CoffeeCup): CoffeeCup {
+            return cup;
+        }
+    }
+
+    //설탕 제조기
+    class CandySugarMixer implements SugarProvider{
+        private getSugar() {
+            console.log('Getting some suger from Candy');
+            return true;
+        }
+
+        addSugar(cup:CoffeeCup):CoffeeCup {
+            const sugar = this.getSugar();
+            return {
+                ...cup,
+                hasSugar: sugar
+            };
+        }
+    }
+
+    class SugarMixer implements SugarProvider{
+        private getSugar() {
+            console.log('Getting some suger from jar');
+            return true;
+        }
+
+        addSugar(cup:CoffeeCup):CoffeeCup {
+            const sugar = this.getSugar();
+            return {
+                ...cup,
+                hasSugar: sugar
+            };
+        }
+    }
+
+    class Nosugar implements SugarProvider {
+        addSugar(cup: CoffeeCup): CoffeeCup {
+            return cup;
+        }
+    }
+
     class CoffeeMachine implements CoffeeMaker {
         private static BEANS_GRAMM_PER_SHOT :number  = 7; // class level
         private _coffeeBeansGramm: number;   // instance (object) level
 
-        public constructor(coffeeBeansGramm:number) {
+        public constructor(coffeeBeansGramm:number
+        ,private milk:MilkFrother
+        ,private sugar:SugarProvider) {
             this._coffeeBeansGramm=  coffeeBeansGramm;
         }
 
@@ -30,10 +131,6 @@
         }
         clean() {
             console.log('cleanning the machine...');
-        }
-
-        static makeMachine(coffeeBeans: number) {
-            return new CoffeeMachine(coffeeBeans);
         }
 
         private grindBeans(shots: number) {
@@ -58,94 +155,32 @@
         makeCoffee(shots:number): CoffeeCup {
             this.grindBeans(shots);
             this.preheat();
-            return this.extract(shots);
-        }
-    }
-
-
-    //싸구려 우유 거품기
-    class cheapMiilkSteamer {
-        private steamMilk():void {
-            console.log('steamming some milk...');
-        }
-
-        makeMilk(cup: CoffeeCup): CoffeeCup {
-            this.steamMilk();
-            return {
-                ...cup,
-                hasMilk : true,
-            }
-        }
-    }
-
-    class CaffeLatteMachine extends CoffeeMachine {
-        constructor(coffeeBeansGramm: number
-                    , public serialNumber: string
-                    ,private milkFother: cheapMiilkSteamer)  // 필요한 기능을 외부에서 주입받는다 DI(Dependency Injection)
-        {
-            super(coffeeBeansGramm);
-        }
-
-
-        makeCoffee(shots: number): CoffeeCup {
-            const coffee = super.makeCoffee(shots);
-            return this.milkFother.makeMilk(coffee);
-        }
-
-    }
-
-    //설탕 제조기
-    class AutomaticSugarMixer {
-        private getSugar() {
-            console.log('Getting some suger from jar');
-            return true;
-        }
-
-        addSugar(cup:CoffeeCup):CoffeeCup {
-            const sugar = this.getSugar();
-            return {
-                ...cup,
-                hasSugar: sugar
-            };
-        }
-    }
-
-
-    class SweetCoffeeMachine extends CoffeeMachine{
-        constructor( private beans:number
-                    ,private sugar:AutomaticSugarMixer) {
-            super(beans);
-        }
-
-        makeCoffee(shots: number): CoffeeCup {
-            const coffee = super.makeCoffee(shots);
-            return this.sugar.addSugar(coffee);
-        }
-    }
-
-    // 즉 각각에 클레스에서는 본인이 필요한 것을 매번 구현하는 것이 아니라
-    // 각각의 기능별로 클레스를 구현해서 필요한곳에서 가져다 쓰는 Composition 하는 것으로 구현해 보았다.
-    // 지금 구조에서의 문제점은 주입 받는 기능들이 너무 단단하게 클레스들과 연결되어있다.
-    // 이말은 나는 우유 거품기라면 어떤 것이든 상관 없는데 지금 상태에서는 오직 싸구려 거품기만을 사용해야되고
-    // 클레스명이 바뀌게되면 해당 기능을 주입받는 클레스에 가서 모두 변경해줘야 된다.
-
-    class SweetCaffeLatteMachine extends CoffeeMachine {
-        constructor(
-             private beans:number
-            ,private milk:cheapMiilkSteamer
-            ,private sugar:AutomaticSugarMixer) {
-            super(beans);
-        }
-
-
-        makeCoffee(shots: number): CoffeeCup {
-            const coffeeCup = super.makeCoffee(shots);
-            const sugarAdded = this.sugar.addSugar(coffeeCup);
+            const coffee = this.extract(shots);
+            const sugarAdded = this.sugar.addSugar(coffee);
             return this.milk.makeMilk(sugarAdded);
         }
     }
 
-    
+
+    // Milk
+    const cheapMilkMaker = new CheapMiilkSteamer();
+    const fancyMilkMaker = new FancyMiilkSteamer();
+    const coldMilkMaker = new ColdMiilkSteamer();
+    const noMilk = new NoMilk();
+
+    // Sugar
+    const candySugar = new CandySugarMixer();
+    const sugar = new SugarMixer();
+    const noSugar = new Nosugar();
+
+
+    const sweetCandyMachine = new CoffeeMachine(12, noMilk,candySugar);
+    const sweetMachine = new CoffeeMachine(12,noMilk, sugar);
+
+    const latteMachine = new CoffeeMachine(12,  cheapMilkMaker,noSugar);
+    const coldLatteMachine = new CoffeeMachine(12, coldMilkMaker,noSugar);
+    const sweetLatteMachine = new CoffeeMachine(12, cheapMilkMaker, candySugar);
+
 
 
 }
