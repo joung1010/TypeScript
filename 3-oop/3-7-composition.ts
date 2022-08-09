@@ -62,52 +62,87 @@
         }
     }
 
+
+    //싸구려 우유 거품기
+    class cheapMiilkSteamer {
+        private steamMilk():void {
+            console.log('steamming some milk...');
+        }
+
+        makeMilk(cup: CoffeeCup): CoffeeCup {
+            this.steamMilk();
+            return {
+                ...cup,
+                hasMilk : true,
+            }
+        }
+    }
+
     class CaffeLatteMachine extends CoffeeMachine {
-        constructor(coffeeBeansGramm:number,public serialNumber:string) {
+        constructor(coffeeBeansGramm: number
+                    , public serialNumber: string
+                    ,private milkFother: cheapMiilkSteamer)  // 필요한 기능을 외부에서 주입받는다 DI(Dependency Injection)
+        {
             super(coffeeBeansGramm);
         }
 
-        steamMilk():void {
-            console.log('steamming some milk...');
-        }
+
         makeCoffee(shots: number): CoffeeCup {
             const coffee = super.makeCoffee(shots);
-            this.steamMilk();
-            return {
-                ...coffee,
-                hasMilk: true,
-            };
+            return this.milkFother.makeMilk(coffee);
         }
 
     }
+
+    //설탕 제조기
+    class AutomaticSugarMixer {
+        private getSugar() {
+            console.log('Getting some suger from jar');
+            return true;
+        }
+
+        addSugar(cup:CoffeeCup):CoffeeCup {
+            const sugar = this.getSugar();
+            return {
+                ...cup,
+                hasSugar: sugar
+            };
+        }
+    }
+
 
     class SweetCoffeeMachine extends CoffeeMachine{
+        constructor( private beans:number
+                    ,private sugar:AutomaticSugarMixer) {
+            super(beans);
+        }
+
         makeCoffee(shots: number): CoffeeCup {
             const coffee = super.makeCoffee(shots);
-            return{
-                ...coffee,
-                hasSugar : true,
-            };
+            return this.sugar.addSugar(coffee);
         }
     }
 
-    class SweetCaffeLatteMachine extends CaffeLatteMachine, SweetCoffeeMachine {
+    // 즉 각각에 클레스에서는 본인이 필요한 것을 매번 구현하는 것이 아니라
+    // 각각의 기능별로 클레스를 구현해서 필요한곳에서 가져다 쓰는 Composition 하는 것으로 구현해 보았다.
 
+    class SweetCaffeLatteMachine extends CoffeeMachine {
+        constructor(
+             private beans:number
+            ,private milk:cheapMiilkSteamer
+            ,private sugar:AutomaticSugarMixer) {
+            super(beans);
+        }
+
+
+        makeCoffee(shots: number): CoffeeCup {
+            const coffeeCup = super.makeCoffee(shots);
+            const sugarAdded = this.sugar.addSugar(coffeeCup);
+            return this.milk.makeMilk(sugarAdded);
+        }
     }
 
-    const machines:CoffeeMaker[] = [
-        new CoffeeMachine(16),
-        new CaffeLatteMachine(16,'1'),
-        new SweetCoffeeMachine(16),
-        new CoffeeMachine(16),
-        new CaffeLatteMachine(16,'2'),
-        new SweetCoffeeMachine(16),
-    ];
-
-    machines.forEach(machine => {
-        console.log('------------------------------------');
-        machine.makeCoffee(1);
-    })
+    
 
 
 }
