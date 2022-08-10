@@ -42,4 +42,21 @@
     const BobAfterPay = payBad(bob);
     // 지금 현제에서 각각 클레스가 가지고있는 고유 메소드정보를 잃어 버린다.
     // 그이유는 pay 함수가 실행되고 return으로 Employee 인터페이스 타입으로 return 하기때문에이다.
+
+    const obj = {
+        name:'mason',
+        age:20,
+    }
+
+    const obj2 = {
+        animal:'dog',
+    }
+
+    function getValie<T,K extends keyof T,V >(obj: T,key:K):T[K] {
+        return obj[key];
+    }
+
+    console.log(getValie(obj, 'name')); // mason
+    console.log(getValie(obj, 'age')); // 20
+    console.log(getValie(obj2, 'animal')); // 20
 }
