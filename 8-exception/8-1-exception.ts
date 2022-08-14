@@ -5,7 +5,7 @@
 // const array = new Array(1000000000000000000000000000000000000000000000000000000000000);
 
 
-function move(direction:'up' | 'down' | 'left' | 'right' | 'he') {
+/*function move(direction:'up' | 'down' | 'left' | 'right' | 'he') {
     switch (direction) {
         case "up":
             position.y +=1;
@@ -25,4 +25,34 @@ function move(direction:'up' | 'down' | 'left' | 'right' | 'he') {
             // 만약 위에서 처리하면 컴파일 에러가 발생하지 않는다.
             throw new Error(`unkown direction ${direction}`);
     }
+}*/
+
+
+// Error (Exception) Handling : try -> catch -> finally
+
+function readFile(fileName:string):string {
+    if (fileName === 'not exist') {
+        throw new Error(`file not exist! ${fileName}`);
+    }
+    return 'file contents';
 }
+
+function close(file: string) {
+    console.log('closed');
+    //
+}
+
+function run() {
+    const fileName = 'file';
+    try { // 예상치 못한 에러가 발생하는 부분에서만 사용
+        console.log(readFile(fileName));
+    } catch (e){ // 에러가 발생했을때 처리
+        console.log('catched!!');
+        return;
+    }finally { // 에러 발생 여부와 상관없이 무조건 처리해야만할때
+        close(fileName);
+    }
+}
+run();
+
+
