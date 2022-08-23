@@ -38,6 +38,9 @@
 *   7. jsx : 리엑트 jsx파일에 관한 설정
 *   8. declaration : 내가 작성한 코드를 라이브러리 형식으로 외부에 제공할 것이 아니라면 잘 사용하지 않음
 *   9. sourceMap : 디버깅할때 유용하게 사용
+*                   소스맵을 true하게되면 .map파일을 생성해서 js파일과 ts파일을 연결해준다.
+*                   -> 크롬브라우저 F1 클릭후 Settings패널Preferences > Sources 아래
+*                   Enable source maps는Enable JavaScript source maps 선택한다.
 *   10. outFile : 다수의 타입스크립트 파일을 딱하나의 js파일료 만들때 사용
 *   11. composite : 이전에 빌드된 정보를 기억하고 있어서 컴파일할때 더빠르게 진행(1.incremental 같이활용)
 *   12. tsBuildInfoFile .incremental 가 true이면 이 관련된 정보들을 담을수 있는 파일을 지정
@@ -49,4 +52,16 @@
 * */
 
 
-console.log('this is main.ts');
+
+    class Car{
+        engine = 0;
+
+        move() {
+            const engine = this.engine +1;
+            console.log('engine!');
+            console.log(engine);
+        }
+    }
+
+const car = new Car();
+car.move();

@@ -1,6 +1,3 @@
 "use strict";
-// 타입스크립트 컴파일 tsc 파일명 -w(watch 모드)
-// 하지만 이 명령어는 한개의 파일만을 js 로 변환한다.
-// tsc --init  명령어주면 config 파일이 생성되고 컴파일러 옵션을 설정할 수 있다.
-// tsc -w 명렁어를 주면 해당경로의 ts파일을 모두 js 파일로 변환한다. (파일이 수정되면 바로바로 컴파일된다.)
 console.log('hello!!!');
+//# sourceMappingURL=loggin.js.map
